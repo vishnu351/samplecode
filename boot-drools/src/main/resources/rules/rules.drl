@@ -84,5 +84,7 @@ rule "List Of Guidlines" salience -1
 	if(res.size()>0){
 	    $m.setResult(res);
 	    System.out.println(res.size());
+	    System.out.println(res.size());
+	    System.out.println(res.size());
 	    }
 	end
