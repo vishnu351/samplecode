@@ -1,0 +1,177 @@
+
+package rules
+
+
+
+
+import com.javainuse.model.Product
+
+import com.javainuse.model.Result
+
+import com.javainuse.model.FPIns
+
+import java.util.List;
+
+
+
+global List<Result> res;
+
+global List<FPIns> fpins;
+
+
+
+rule "Manufactured Guidlines TRUE"
+
+when
+
+$m: Product(manufactured!="07" )
+
+then
+
+Result result = new Result();
+
+result.setType("Manufactured Guidlines");
+
+result.setResult("PASS");
+
+res.add(result);
+
+end
+
+rule "Manufactured Guidlines FALSE"
+
+when
+
+$m: Product(manufactured=="07")
+
+$lis:Result();
+
+then
+
+Result result = new Result();
+
+result.setType("Manufactured Guidlines");
+
+result.setResult("FAIL");
+
+res.add(result);
+
+end
+
+rule "Texas Equity Guidelines TRUE"
+
+
+
+
+
+when
+
+$m: Product(LoanType!="32")
+
+then
+
+Result result = new Result();
+
+result.setType("Texas Equity Guidelines");
+
+result.setResult("PASS");
+
+res.add(result);
+
+end
+
+rule "Texas Equity Guidelines FALSE"
+
+when
+
+$m: Product(LoanType=="32")
+
+then
+
+Result result = new Result();
+
+result.setType("Texas Equity Guidelines");
+
+result.setResult("FAIL");
+
+res.add(result);
+
+end
+
+rule "Lender Placed Escrow Guidelines"
+
+when
+
+$m: Product()
+
+
+
+then
+
+Result result = new Result();
+
+int total=0;
+
+
+
+for (FPIns fPIns : $m.getfPInsList()) {
+
+int force=0;
+
+int ltr=0;
+
+if(fPIns.getFLTEXT().contains("flood") ){
+
+force++;
+
+}
+
+if(fPIns.getFLTEXT().contains("place") ){
+
+force++;
+
+}
+
+if(fPIns.getFLTEXT().contains("ltr") ){
+
+ltr++;
+
+}
+
+total= total +(force-ltr);
+
+}
+
+result.setType("Lender Placed Escrow Guidelines");
+
+if(total>0){
+
+result.setResult("FAIL");
+
+}else{
+
+result.setResult("PASS");
+
+}
+
+res.add(result);
+
+end
+
+rule "List Of Guidlines" salience -1
+
+when
+
+$m: Product()
+
+then
+
+if(res.size()>0){
+
+$m.setResult(res);
+
+System.out.println(res.size());
+
+}
+
+end
